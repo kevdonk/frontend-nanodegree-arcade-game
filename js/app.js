@@ -2,7 +2,7 @@ const ROW_HEIGHT = 83;
 const COL_WIDTH = 101;
 const NUM_ROWS = 8;
 const NUM_COLS = 8;
-const OFFSET = 18;
+const ENEMY_OFFSET = 18;
 const NUM_ENEMIES = 7;
 const LOG_SPEED = [-200, 250, -150];
 const NUM_LOGS = 16;
@@ -28,7 +28,7 @@ Entity.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
-//Return curren row
+//Return current row
 Entity.prototype.getRow = function() {
     return Math.abs(Math.floor(this.y / ROW_HEIGHT));
 }
@@ -39,7 +39,7 @@ var Enemy = function() {
     //y = rand()
     //y should be on the road (4-6) * 83 - 15    (where 83 = row height and 15 = enemy offset)
     var row = Math.floor(Math.random() * 3) + 4;
-    y = ROW_HEIGHT * row - OFFSET;
+    y = ROW_HEIGHT * row - ENEMY_OFFSET;
     Entity.call(this, x, y,  'images/enemy-bug.png');  //call Entity constructor
     this.speed = (Math.floor(Math.random() * 5) + 1) * 100;
 }
@@ -83,9 +83,8 @@ Log.prototype.update = function(dt) {
 }
 
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+//Player()
+//Paramaters x, y, and sprite are pass to Entity
 var Player = function(x, y, sprite) {
     Entity.call(this, x , y, sprite);        //call Entity constructor
 }
@@ -107,16 +106,12 @@ Player.prototype.handleInput = function(keyPressed)
             this.y -= ROW_HEIGHT;
 
 }
+//Reset()
+//Puts player at start position
 Player.prototype.reset = function (){
     this.x = COL_WIDTH * 3;
     this.y = ROW_HEIGHT * (NUM_COLS - 1);
 }
-//check to see if player is riding a log (close to a log object)
-Player.prototype.logRide = function(log) {
-            if((player.x - log.x < (COL_WIDTH/2 + LOG_STICKYNESS) && player.y - log.y < (COL_WIDTH/2 + LOG_STICKYNESS)) && (player.x - log.x > -ROW_HEIGHT/2 && player.y - log.y > -ROW_HEIGHT/2))
-                return true;
-}
-
 //Update condition of Player
 Player.prototype.update = function (){
 
@@ -129,7 +124,7 @@ Player.prototype.update = function (){
     if(player.getRow() == 1 || player.getRow() == 2 || player.getRow() == 3)        // if player is on the water
     {
 
-        if(!logs.some(player.logRide)) {                                            //if player is not riding a log
+        if(!logs.some(logRide)) {                                            //if player is not riding a log
                 player.safe = false;                                                //they aren't safe
         }
         else
@@ -145,7 +140,11 @@ Player.prototype.update = function (){
         reset();
 
 }
-
+//check to see if player is riding a log (close to a log object)
+var logRide = function(log) {
+            if((player.x - log.x < (COL_WIDTH/2 + LOG_STICKYNESS) && player.y - log.y < (COL_WIDTH/2 + LOG_STICKYNESS)) && (player.x - log.x > -ROW_HEIGHT/2 && player.y - log.y > -ROW_HEIGHT/2))
+                return true;
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -168,12 +167,11 @@ var logs = [];
     logs[8] = new Log(5, 2);
     logs[9] = new Log(6, 2);    
 //third row of logs
-    logs[10] = new Log(0, 3);
-    logs[11] = new Log(1, 3);
-    logs[12] = new Log(2, 3);
-    logs[13] = new Log(5, 3);
-    logs[14] = new Log(6, 3);
-    logs[15] = new Log(7, 3);
+    logs[10] = new Log(1, 3);
+    logs[11] = new Log(2, 3);
+    logs[12] = new Log(5, 3);
+    logs[13] = new Log(6, 3);
+    logs[14] = new Log(7, 3);
 
 
 
