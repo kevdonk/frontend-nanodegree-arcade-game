@@ -6,8 +6,8 @@ var Engine = (function(global) {
         patterns = {},
         lastTime;
 
-    canvas.width = 505;
-    canvas.height = 606;
+    canvas.width = 808;
+    canvas.height = 747;
     doc.body.appendChild(canvas);
 
     function main() {
@@ -30,27 +30,32 @@ var Engine = (function(global) {
 
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+     //   checkCollisions();
     }
 
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        logs.forEach(function(log) {
+            log.update(dt);
+        });
         player.update();
     }
 
     function render() {
         var rowImages = [
+                'images/grass-block.png',
+                'images/water-block.png',
+                'images/water-block.png',
                 'images/water-block.png',
                 'images/stone-block.png',
                 'images/stone-block.png',
                 'images/stone-block.png',
-                'images/grass-block.png',
                 'images/grass-block.png'
             ],
-            numRows = 6,
-            numCols = 5,
+            numRows = 8,
+            numCols = 8,
             row, col;
 
         for (row = 0; row < numRows; row++) {
@@ -66,7 +71,11 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
+        logs.forEach(function(log) {
+            log.render();
+        });
         player.render();
+
     }
 
     function reset() {
@@ -76,9 +85,11 @@ var Engine = (function(global) {
     Resources.load([
         'images/stone-block.png',
         'images/water-block.png',
+        'images/log-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/donk.png'
     ]);
     Resources.onReady(init);
 
