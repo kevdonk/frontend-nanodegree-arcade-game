@@ -4,7 +4,7 @@ const NUM_ROWS = 8;
 const NUM_COLS = 8;
 const ENEMY_OFFSET = 18;
 const NUM_ENEMIES = 7;
-const LOG_SPEED = [-200, 250, -150];
+const LOG_SPEED = [-300, 250, -350];
 const NUM_LOGS = 16;
 const NUM_LIVES = 3;
 const LOG_STICKYNESS = 15;                          //leniency on logs to account for logs drifting apart 
@@ -182,7 +182,7 @@ Player.prototype.reset = function (){
     this.y = ROW_HEIGHT * (NUM_COLS - 1);
 }
 //Update condition of Player
-Player.prototype.update = function (){
+Player.prototype.update = function (dt){
 
 
     //check for collision with enemies
@@ -201,6 +201,7 @@ Player.prototype.update = function (){
         else
         {
             player.safe = true;
+            player.x += LOG_SPEED[player.getRow()-1] * dt;
         }
     
     if(!player.safe) {
