@@ -40,7 +40,7 @@ var Engine = (function(global) {
         logs.forEach(function(log) {
             log.update(dt);
         });
-        player.update();
+        player.update(dt);
     }
 
     function render() {
