@@ -1,2 +1,11 @@
 http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+
+Sounds from:
+http://www.soundjay.com/
+
+
+playing sounds
+https://docs.google.com/presentation/d/1HK947ywibadLLdbAAv5SBYjQ22UER7gbJyXss85GLmg/edit#slide=id.g1437efb_0_33
+
+http://www.w3schools.com/html/html5_canvas.asp

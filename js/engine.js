@@ -44,38 +44,42 @@ var Engine = (function(global) {
     }
 
     function render() {
-        var rowImages = [
-                'images/grass-block.png',
-                'images/water-block.png',
-                'images/water-block.png',
-                'images/water-block.png',
-                'images/stone-block.png',
-                'images/stone-block.png',
-                'images/stone-block.png',
-                'images/grass-block.png'
-            ],
-            numRows = 8,
-            numCols = 8,
-            row, col;
+        if(player.life > 0)        {
+            var rowImages = [
+                    'images/grass-block.png',
+                    'images/water-block.png',
+                    'images/water-block.png',
+                    'images/water-block.png',
+                    'images/stone-block.png',
+                    'images/stone-block.png',
+                    'images/stone-block.png',
+                    'images/grass-block.png'
+                ],
+                numRows = 8,
+                numCols = 8,
+                row, col;
 
-        for (row = 0; row < numRows; row++) {
-            for (col = 0; col < numCols; col++) {
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+            for (row = 0; row < numRows; row++) {
+                for (col = 0; col < numCols; col++) {
+                    ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                }
             }
-        }
 
-        renderEntities();
+            renderEntities();
+        }
+        else
+            gameOver();
+
     }
 
     function renderEntities() {
         allEnemies.forEach(function(enemy) {
-            enemy.render();
+        enemy.render();
         });
         logs.forEach(function(log) {
             log.render();
         });
         player.render();
-
     }
 
     function reset() {
@@ -89,7 +93,8 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/donk.png'
+        'images/donk.png',
+        'images/life.png'
     ]);
     Resources.onReady(init);
 
