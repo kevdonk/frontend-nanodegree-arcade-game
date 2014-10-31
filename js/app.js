@@ -6,10 +6,30 @@ const ENEMY_OFFSET = 18;
 const NUM_ENEMIES = 7;
 const LOG_SPEED = [-200, 250, -150];
 const NUM_LOGS = 16;
+const NUM_LIVES = 3;
 const LOG_STICKYNESS = 15;                          //leniency on logs to account for logs drifting apart 
                                                     //it's a feature, not a bug 
+
+//
 var reset = function() {
     player.reset();
+}
+
+var gameOver = function() {
+    ctx.clearRect(0, 0, ctx.width, ctx.height);
+    ctx.font = 'Bold 60px Verdana';
+    ctx.fillStyle = '#000000';
+    ctx.fillText('Game Over :(', 175, 250);
+    ctx.font = "Bold 70px Verdana";
+    ctx.fillText("Score: " + player.score, 225, 350);
+
+/*    
+    ctx.fillStyle = "#EEEEEE";
+    ctx.font = "Bold 20px Sans-Serif";
+    ctx.fillStyle = "#000000";
+    ctx.fillText("Game Over :(", 400, 250);
+    ctx.fillText("Score: " + player.score, 450, 300);
+*/
 }
 
 //Entity class - base class
@@ -17,7 +37,6 @@ var reset = function() {
 //sprite - location of sprite image, loaded by load(urlOrArr) in resources.js
 //x - x position
 //y - y position
-//update() - update position of object
 var Entity = function(x, y, sprite) {  
     this.x = x;
     this.y = y;
@@ -36,11 +55,9 @@ Entity.prototype.getRow = function() {
 // Enemies our player must avoid
 var Enemy = function() {
     x = -COL_WIDTH;   // initial x value is off (left of) the screen
-    //y = rand()
-    //y should be on the road (4-6) * 83 - 15    (where 83 = row height and 15 = enemy offset)
-    var row = Math.floor(Math.random() * 3) + 4;
-    y = ROW_HEIGHT * row - ENEMY_OFFSET;
-    Entity.call(this, x, y,  'images/enemy-bug.png');  //call Entity constructor
+    var row = Math.floor(Math.random() * 3) + 4;                //road is between rows 4 and 6
+    y = ROW_HEIGHT * row - ENEMY_OFFSET;                        //offset enemy to appear nicely
+    Entity.call(this, x, y,  'images/enemy-bug.png');           //call Entity constructor
     this.speed = (Math.floor(Math.random() * 5) + 1) * 100;
 }
 
@@ -87,26 +104,90 @@ Log.prototype.update = function(dt) {
 //Paramaters x, y, and sprite are pass to Entity
 var Player = function(x, y, sprite) {
     Entity.call(this, x , y, sprite);        //call Entity constructor
+    this.life = NUM_LIVES;
+    this.score = 0;
 }
 
 Player.prototype = Object.create(Entity.prototype); //set prototype delegation
 Player.prototype.constructor = Player;              //set constructor delegation
 
+//render player
+//show score and lives
+Player.prototype.render = function() {
+    Entity.prototype.render.call(this);
+    for(var i = 0; i < this.life; i++)
+        ctx.drawImage(Resources.get('images/life.png'), i * 45, 685);
+    ctx.fillStyle = "#111111";
+    ctx.font = "Bold 20px Verdana";
+    ctx.fillText("Score: " + this.score, 700, 725);
+    
+}
+
+//move player and play sound
+//Parameter: direction
+Player.prototype.move = function(direction) {
+    switch(direction) {
+        case 'right':
+            this.x += COL_WIDTH;
+            break;
+        case 'left':
+            this.x -= COL_WIDTH;
+            break;
+        case 'down':
+            this.y += ROW_HEIGHT;
+            break;
+        case 'up':
+            this.y -= ROW_HEIGHT;
+            break;
+        default:
+            break;
+    }
+    moveSound.play();
+}
+
+//Player dies
+//remove a life and reset position 
+Player.prototype.die = function() {
+    dieSound.play();
+    this.life--;
+    this.reset();
+    if(player.life == 0)
+        gameOverSound.play();
+}
+
+//Player gets across the map and scores a point
+Player.prototype.scorePoint = function() {
+    this.score++;
+    pointSound.play();
+    if(this.score == 10)
+        wellDoneSound.play();
+    this.reset();
+}
+
 //function to handle key presses from player
 //bounds set for 8x8 grid of tiles with width 101, height 83
 Player.prototype.handleInput = function(keyPressed)
 {
-    if(keyPressed == 'right' && this.x < 706)
-            this.x += COL_WIDTH;
-    if(keyPressed == 'left' && this.x > 100)
-            this.x -= COL_WIDTH;
-    if(keyPressed == 'down' && this.y < 580)
-            this.y += ROW_HEIGHT;
-    if(keyPressed == 'up' && this.y > 82)
-            this.y -= ROW_HEIGHT;
+    if(player.life > 0) {
+        if(keyPressed == 'right' && this.x < 706) {
+            this.move('right');
+        }
+
+        if(keyPressed == 'left' && this.x > 100) {
+            this.move('left');
+        }
+        if(keyPressed == 'down' && this.y < 580) {
+            this.move('down');
+        }
+        if(keyPressed == 'up' && this.y > 82) {
+            this.move('up');
+        }
+    }
+
+
 
 }
-//Reset()
+
 //Puts player at start position
 Player.prototype.reset = function (){
     this.x = COL_WIDTH * 3;
@@ -115,10 +196,12 @@ Player.prototype.reset = function (){
 //Update condition of Player
 Player.prototype.update = function (){
 
+
     //check for collision with enemies
     for(e in allEnemies) {
-        if((player.x - allEnemies[e].x < COL_WIDTH/2 && player.y - allEnemies[e].y < COL_WIDTH/2) && (player.x - allEnemies[e].x > -ROW_HEIGHT/2 && player.y - allEnemies[e].y > -ROW_HEIGHT/2))
-            reset();                                                                //reset if touching any enemy
+        if((player.x - allEnemies[e].x < COL_WIDTH/2 && player.y - allEnemies[e].y < COL_WIDTH/2) && (player.x - allEnemies[e].x > -ROW_HEIGHT/2 && player.y - allEnemies[e].y > -ROW_HEIGHT/2)) {
+            player.die();                                                         //dies if touching any enemy
+        }
     }
 
     if(player.getRow() == 1 || player.getRow() == 2 || player.getRow() == 3)        // if player is on the water
@@ -132,12 +215,13 @@ Player.prototype.update = function (){
             player.safe = true;
         }
     
-    if(!player.safe)
-        reset();
+    if(!player.safe) {
+        player.die();
+    }
     }
 
     if(player.getRow() == 0)
-        reset();
+        player.scorePoint();
 
 }
 //check to see if player is riding a log (close to a log object)
@@ -146,15 +230,35 @@ var logRide = function(log) {
                 return true;
 }
 
+//Sound to be played
+//Params:
+//sound - path to sound file
+//bufferSize - # of simultaneous instances to cache for quick loading
+
+/*********                           Sounds in this game from http://www.soundjay.com/                   *********/
+var Sound = function(sound, bufferSize) {                              
+    this.buffer = [];
+    this.index = 0;
+    for(var i=0; i < bufferSize; i++)
+        this.buffer.push(new Audio(sound));
+}
+
+Sound.prototype.play = function() {
+    if(window.chrome) this.buffer[this.index].load();
+    this.buffer[this.index].play();
+    this.index = (this.index + 1) % this.buffer.length;
+}
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var player = new Player(COL_WIDTH * 3, ROW_HEIGHT * (NUM_COLS - 1), 'images/donk.png');
-var allEnemies = [];
-for(var i = 0; i < NUM_ENEMIES; i++)
-    allEnemies[i] = new Enemy();
-var logs = [];
-//first row of logs
+
+    var player = new Player(COL_WIDTH * 3, ROW_HEIGHT * (NUM_COLS - 1), 'images/donk.png');
+    var allEnemies = [];
+    for(var i = 0; i < NUM_ENEMIES; i++)
+        allEnemies[i] = new Enemy();
+    var logs = [];
+    //first row of logs
     logs[0] = new Log(1, 1);
     logs[1] = new Log(0, 1);
     logs[2] = new Log(3, 1);
@@ -172,6 +276,13 @@ var logs = [];
     logs[12] = new Log(5, 3);
     logs[13] = new Log(6, 3);
     logs[14] = new Log(7, 3);
+
+//sound objects
+var moveSound = new Sound('sounds/move.mp3', 6);
+var dieSound = new Sound('sounds/die.mp3', 2);
+var pointSound = new Sound('sounds/point.mp3', 2);
+var gameOverSound = new Sound('sounds/gameover.mp3', 1);
+var wellDoneSound = new Sound('sounds/welldone.mp3', 1);
 
 
 
