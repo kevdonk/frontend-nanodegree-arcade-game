@@ -10,26 +10,14 @@ const NUM_LIVES = 3;
 const LOG_STICKYNESS = 15;                          //leniency on logs to account for logs drifting apart 
                                                     //it's a feature, not a bug 
 
-//
-var reset = function() {
-    player.reset();
-}
-
+//display Game Over and Score
 var gameOver = function() {
     ctx.clearRect(0, 0, ctx.width, ctx.height);
     ctx.font = 'Bold 60px Verdana';
     ctx.fillStyle = '#000000';
     ctx.fillText('Game Over :(', 175, 250);
-    ctx.font = "Bold 70px Verdana";
-    ctx.fillText("Score: " + player.score, 225, 350);
-
-/*    
-    ctx.fillStyle = "#EEEEEE";
-    ctx.font = "Bold 20px Sans-Serif";
-    ctx.fillStyle = "#000000";
-    ctx.fillText("Game Over :(", 400, 250);
-    ctx.fillText("Score: " + player.score, 450, 300);
-*/
+    ctx.font = 'Bold 70px Verdana';
+    ctx.fillText('Score: ' + player.score, 225, 350);
 }
 
 //Entity class - base class
@@ -151,7 +139,7 @@ Player.prototype.die = function() {
     dieSound.play();
     this.life--;
     this.reset();
-    if(player.life == 0)
+    if(player.life == 0)                            //play sound if last life lost
         gameOverSound.play();
 }
 
@@ -159,7 +147,7 @@ Player.prototype.die = function() {
 Player.prototype.scorePoint = function() {
     this.score++;
     pointSound.play();
-    if(this.score == 10)
+    if(this.score%10 == 0)                            //applause every 10 points
         wellDoneSound.play();
     this.reset();
 }
@@ -168,7 +156,7 @@ Player.prototype.scorePoint = function() {
 //bounds set for 8x8 grid of tiles with width 101, height 83
 Player.prototype.handleInput = function(keyPressed)
 {
-    if(player.life > 0) {
+    if(player.life > 0) {                           //can only move when alive
         if(keyPressed == 'right' && this.x < 706) {
             this.move('right');
         }
@@ -253,29 +241,29 @@ Sound.prototype.play = function() {
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
-    var player = new Player(COL_WIDTH * 3, ROW_HEIGHT * (NUM_COLS - 1), 'images/donk.png');
-    var allEnemies = [];
-    for(var i = 0; i < NUM_ENEMIES; i++)
-        allEnemies[i] = new Enemy();
-    var logs = [];
-    //first row of logs
-    logs[0] = new Log(1, 1);
-    logs[1] = new Log(0, 1);
-    logs[2] = new Log(3, 1);
-    logs[3] = new Log(4, 1);
-    logs[4] = new Log(6, 1);
-    logs[5] = new Log(7, 1);
+var player = new Player(COL_WIDTH * 3, ROW_HEIGHT * (NUM_COLS - 1), 'images/donk.png');
+var allEnemies = [];
+for(var i = 0; i < NUM_ENEMIES; i++)
+    allEnemies[i] = new Enemy();
+var logs = [];
+//first row of logs
+logs[0] = new Log(1, 1);
+logs[1] = new Log(0, 1);
+logs[2] = new Log(3, 1);
+logs[3] = new Log(4, 1);
+logs[4] = new Log(6, 1);
+logs[5] = new Log(7, 1);
 //second row of logs
-    logs[6] = new Log(1, 2);
-    logs[7] = new Log(2, 2);
-    logs[8] = new Log(5, 2);
-    logs[9] = new Log(6, 2);    
+logs[6] = new Log(1, 2);
+logs[7] = new Log(2, 2);
+logs[8] = new Log(5, 2);
+logs[9] = new Log(6, 2);    
 //third row of logs
-    logs[10] = new Log(1, 3);
-    logs[11] = new Log(2, 3);
-    logs[12] = new Log(5, 3);
-    logs[13] = new Log(6, 3);
-    logs[14] = new Log(7, 3);
+logs[10] = new Log(1, 3);
+logs[11] = new Log(2, 3);
+logs[12] = new Log(5, 3);
+logs[13] = new Log(6, 3);
+logs[14] = new Log(7, 3);
 
 //sound objects
 var moveSound = new Sound('sounds/move.mp3', 6);
