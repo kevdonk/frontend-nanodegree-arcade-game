@@ -1,7 +1,17 @@
 frontend-nanodegree-arcade-game
 ===============================
+The files required for this game are all present. 
 
-The game has no depencies and runs on its own.
+To play version hosted on GitHub, visit:
+http://kevdonk.github.io/frontend-nanodegree-arcade-game/
+
+To install locally:
+Download zip: https://github.com/kevdonk/frontend-nanodegree-arcade-game/archive/master.zip
+Extract all
+Open index.html in browser to play (full screen may be best on small screens F11)
+
+
+
 
 Use arrow keys to move.
 
