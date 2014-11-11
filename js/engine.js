@@ -3,7 +3,6 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        patterns = {},
         lastTime;
 
     canvas.width = 808;
@@ -22,7 +21,6 @@ var Engine = (function(global) {
     };
 
     function init() {
-
         reset();
         lastTime = Date.now();
         main();
@@ -69,7 +67,6 @@ var Engine = (function(global) {
         }
         else
             gameOver();
-
     }
 
     function renderEntities() {

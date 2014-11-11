@@ -9,7 +9,6 @@ const NUM_LOGS = 16;
 const NUM_LIVES = 3;
 const LOG_STICKYNESS = 15;                          //leniency on logs to account for logs drifting apart 
                                                     //it's a feature, not a bug 
-
 //display Game Over and Score
 var gameOver = function() {
     ctx.clearRect(0, 0, ctx.width, ctx.height);
@@ -108,7 +107,6 @@ Player.prototype.render = function() {
     ctx.fillStyle = "#111111";
     ctx.font = "Bold 20px Verdana";
     ctx.fillText("Score: " + this.score, 700, 725);
-    
 }
 
 //move player and play sound
@@ -171,9 +169,6 @@ Player.prototype.handleInput = function(keyPressed)
             this.move('up');
         }
     }
-
-
-
 }
 
 //Puts player at start position
@@ -273,8 +268,6 @@ var pointSound = new Sound('sounds/point.mp3', 2);
 var gameOverSound = new Sound('sounds/gameover.mp3', 1);
 var wellDoneSound = new Sound('sounds/welldone.mp3', 1);
 
-
-
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
@@ -284,6 +277,5 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });
